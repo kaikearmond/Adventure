@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Outros — Pixelmon Adventures{% endblock %}
+
+{% block content %}
+<section class="section page-hero">
+  <span class="breadcrumb"><a href="{% url 'store:home' %}">Início</a> / Outros</span>
+  <h1 class="section__title">Outros</h1>
+  <p class="page-hero__desc">Informações, links úteis e tudo o que não se encaixa em uma categoria da loja.</p>
+</section>
+
+<section class="section">
+  <div class="info-grid">
+    {% for card in cards %}
+    <article class="info-card reveal {% if card.link %}info-card--linked{% endif %}"{% if card.anchor %} id="{{ card.anchor }}"{% endif %}>
+      {% if card.image_url %}
+        <span class="info-card__brand-icon" aria-hidden="true">
+          <img src="{{ card.image_url }}" class="info-card__brand-image" alt="">
+        </span>
+      {% else %}
+        <span class="info-card__icon" aria-hidden="true">{{ card.icon }}</span>
+      {% endif %}
+
+      <h3 class="info-card__title">{{ card.title }}</h3>
+      <p class="info-card__text">{{ card.summary }}</p>
+
+      {% if card.list_items or card.detail_paragraphs %}
+      <details class="info-card__details">
+        <summary>{{ card.expand_label }}</summary>
+
+        {% if card.list_items %}
+        <ul class="info-card__list">
+          {% for rule in card.list_items %}
+            <li>{{ rule }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if card.detail_paragraphs %}
+        <div class="info-card__paragraphs">
+          {% for paragraph in card.detail_paragraphs %}
+            <p>{{ paragraph }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </details>
+      {% endif %}
+
+      {% if card.link %}
+        <a href="{{ card.link }}" target="_blank" rel="noopener noreferrer" class="btn btn--ghost btn--sm info-card__link">
+          {{ card.link_text }} →
+        </a>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

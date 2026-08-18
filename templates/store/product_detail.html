@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — Pixelmon Adventures{% endblock %}
+
+{% block content %}
+<section class="section product-detail">
+  <span class="breadcrumb">
+    <a href="{% url 'store:home' %}">Início</a> /
+    <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a> /
+    {{ product.name }}
+  </span>
+
+  <div class="product-detail__grid">
+    <div class="product-detail__visual rarity-{{ product.rarity|lower }}">
+      <span class="product-detail__icon">{{ product.icon }}</span>
+      {% if product.display_badge %}<span class="product-card__badge product-detail__badge">{{ product.display_badge }}</span>{% endif %}
+    </div>
+
+    <div class="product-detail__info">
+      <span class="product-card__rarity product-detail__rarity">{{ product.get_rarity_display }}</span>
+      <h1 class="product-detail__title">{{ product.name }}</h1>
+      <p class="product-detail__short">{{ product.short_description }}</p>
+
+      <div class="product-detail__meta">
+        {% if product.duration_label %}<span class="meta-pill">⏱ {{ product.duration_label }}</span>{% endif %}
+        <span class="meta-pill meta-pill--muted">{{ product.stock_label }}</span>
+      </div>
+
+      <div class="product-detail__price">
+        {% if product.original_price %}<span class="price-original">R$ {{ product.original_price }}</span>{% endif %}
+        <span class="price-current price-current--lg">R$ {{ product.price }}</span>
+        {% if product.discount_percent %}<span class="discount-flag">-{{ product.discount_percent }}%</span>{% endif %}
+      </div>
+
+      {% if product.perks_list %}
+      <ul class="perks-list">
+        {% for perk in product.perks_list %}
+        <li>✅ {{ perk }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      <div class="product-detail__actions">
+        <form action="{% url 'store:cart_add' product.id %}" method="post" class="add-to-cart-form" data-product-name="{{ product.name }}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn--ghost btn--lg">Adicionar ao carrinho</button>
+        </form>
+        <form action="{% url 'store:cart_add' product.id %}" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="buy_now" value="1">
+          <button type="submit" class="btn btn--primary btn--lg">Comprar agora ⚡</button>
+        </form>
+      </div>
+      <p class="product-detail__trust">🔒 Compra protegida pelo Mercado Pago · 🎮 Entrega manual após confirmação</p>
+    </div>
+  </div>
+
+  {% if product.description_paragraphs %}
+  <div class="product-detail__description">
+    <h2>Sobre este item</h2>
+    {% for paragraph in product.description_paragraphs %}
+    <p>{{ paragraph }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+
+{% if related %}
+<section class="section">
+  <div class="section__header">
+    <span class="section__eyebrow">Também da categoria {{ product.category.name }}</span>
+    <h2 class="section__title">Você também pode gostar</h2>
+  </div>
+  <div class="product-grid">
+    {% for p in related %}
+    <div class="reveal">{% include "partials/product_card.html" with product=p %}</div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

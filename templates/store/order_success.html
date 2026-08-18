@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Status do pedido — Pixelmon Adventures{% endblock %}
+
+{% block content %}
+<section class="section success-page">
+  <div class="success-card success-card--payment" data-status-url="{% url 'store:order_status' order.order_id %}" id="order-status-card">
+    {% if order.status == 'PAID' %}
+      <span class="success-card__icon" id="status-icon">✅</span>
+      <h1 id="status-title">Pagamento aprovado!</h1>
+      <p id="status-message">Seu pedido foi pago e já está aguardando a entrega manual da equipe.</p>
+    {% elif order.status == 'PENDING' %}
+      <span class="success-card__icon" id="status-icon">⏳</span>
+      <h1 id="status-title">Aguardando pagamento</h1>
+      <p id="status-message">Assim que o Mercado Pago confirmar o pagamento, o status será atualizado automaticamente.</p>
+    {% elif order.status == 'REJECTED' %}
+      <span class="success-card__icon" id="status-icon">❌</span>
+      <h1 id="status-title">Pagamento recusado</h1>
+      <p id="status-message">O Mercado Pago não aprovou esta tentativa. Você pode retornar à loja e tentar novamente.</p>
+    {% elif order.status == 'REFUNDED' %}
+      <span class="success-card__icon" id="status-icon">↩️</span>
+      <h1 id="status-title">Pagamento reembolsado</h1>
+      <p id="status-message">O Mercado Pago informou que este pagamento foi reembolsado.</p>
+    {% elif order.status == 'CANCELLED' %}
+      <span class="success-card__icon" id="status-icon">🚫</span>
+      <h1 id="status-title">Pagamento cancelado</h1>
+      <p id="status-message">Este pagamento foi cancelado.</p>
+    {% else %}
+      <span class="success-card__icon" id="status-icon">⚠️</span>
+      <h1 id="status-title">Não foi possível concluir</h1>
+      <p id="status-message">Ocorreu um erro nesta tentativa. Volte ao carrinho para tentar novamente.</p>
+    {% endif %}
+
+    <p>Pedido <strong>#{{ order.order_id|stringformat:"s"|slice:":8" }}</strong> para <strong>{{ order.nickname }}</strong></p>
+
+    {% if order.payment_method == 'pix' and order.status == 'PENDING' and order.pix_qr_code %}
+    <div class="pix-payment" id="pix-payment">
+      <h2>Pague com Pix</h2>
+      {% if order.pix_qr_code_base64 %}
+        <img src="data:image/png;base64,{{ order.pix_qr_code_base64 }}" class="pix-payment__qr" alt="QR Code Pix do pedido">
+      {% endif %}
+      <label for="pix-code">Pix copia e cola</label>
+      <div class="pix-payment__copy">
+        <textarea id="pix-code" readonly>{{ order.pix_qr_code }}</textarea>
+        <button type="button" class="btn btn--ghost" id="copy-pix">Copiar código</button>
+      </div>
+      <p class="footer-note">O QR Code e o código acima foram gerados pelo Mercado Pago.</p>
+    </div>
+    {% endif %}
+
+    <div class="success-items">
+      {% for item in order.items.all %}
+      <div class="success-items__row">
+        <span>{{ item.product_icon }} {{ item.product_name }} × {{ item.quantity }}</span>
+        <span>R$ {{ item.subtotal }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="success-total">
+      <span>Total</span><strong>R$ {{ order.total }}</strong>
+    </div>
+
+    <div class="order-meta">
+      <span>Status do pagamento: <strong id="payment-status-label">{{ order.get_status_display }}</strong></span>
+      <span>Entrega: <strong>{{ order.get_delivery_status_display }}</strong></span>
+      {% if order.mercadopago_payment_id %}<span>ID Mercado Pago: <strong>{{ order.mercadopago_payment_id }}</strong></span>{% endif %}
+    </div>
+
+    <div class="success-actions">
+      <a href="{% url 'store:home' %}" class="btn btn--primary btn--lg">Voltar à loja</a>
+      {% if order.status == 'REJECTED' or order.status == 'ERROR' %}
+      <a href="{% url 'store:cart' %}" class="btn btn--ghost btn--lg">Tentar novamente</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/order_status.js' %}"></script>
+{% endblock %}
