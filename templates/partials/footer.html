@@ -1,0 +1,52 @@
+<footer class="site-footer">
+  <div class="site-footer__top">
+    <div class="footer-col footer-col--brand">
+      <div class="brand__title brand__title--footer">PIXELMON<b>ADVENTURES</b></div>
+      <p>Sua base de operações para dominar o servidor: VIPs exclusivos com pagamento seguro via Mercado Pago.</p>
+      <div class="social-row">
+        <a href="#" class="social-pill" target="_blank" rel="noopener noreferrer">Discord</a>
+        <a href="https://www.instagram.com/adventuremc0/" class="social-pill" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.tiktok.com/@adventuremc1" class="social-pill" target="_blank" rel="noopener noreferrer">TikTok</a>
+        <a href="https://www.youtube.com/@AdventureMc1" class="social-pill" target="_blank" rel="noopener noreferrer">YouTube</a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Categorias</h4>
+      <ul>
+        {% for cat in nav_categories %}
+        <li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Ajuda</h4>
+      <ul>
+        <li><a href="#">Central de suporte</a></li>
+        <li><a href="{% url 'store:misc_info' %}#suporte">Suporte</a></li>
+        <li><a href="#">Status da entrega</a></li>
+        <li><a href="#">Termos de uso</a></li>
+        <li><a href="#">Política de privacidade</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Pagamento seguro</h4>
+      <div class="payment-badges">
+        <span class="payment-pill">Pix</span>
+        <span class="payment-pill">Cartão de crédito</span>
+        
+      </div>
+      <p class="footer-note">Pagamentos processados com segurança pelo Mercado Pago.</p>
+    </div>
+  </div>
+
+  <div class="site-footer__bottom">
+    <p>© {% now "Y" %} Pixelmon Adventures. Todos os direitos reservados.</p>
+    <p class="legal-note">
+      Pixelmon Adventures é um servidor e loja independente, não afiliado à Mojang, Microsoft,
+      Nintendo, Game Freak ou The Pokémon Company. Minecraft é uma marca registrada da Mojang/Microsoft.
+    </p>
+  </div>
+</footer>

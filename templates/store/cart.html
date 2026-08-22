@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Seu inventário — Pixelmon Adventures{% endblock %}
+
+{% block content %}
+<section class="section cart-page">
+  <h1 class="section__title">Seu inventário 🎒</h1>
+
+  {% if cart %}
+  <div class="cart-layout">
+    <div class="cart-list">
+      {% for item in cart %}
+      <div class="cart-row rarity-{{ item.product.rarity|lower }}">
+        <span class="cart-row__icon">{{ item.product.icon }}</span>
+        <div class="cart-row__info">
+          <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
+          <span class="cart-row__category">{{ item.product.category.name }}</span>
+        </div>
+
+        <form class="cart-row__qty" action="{% url 'store:cart_update' item.product.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" name="quantity" value="{{ item.quantity|add:'-1' }}" class="qty-btn" aria-label="Diminuir quantidade">−</button>
+          <span class="qty-value">{{ item.quantity }}</span>
+          <button type="submit" name="quantity" value="{{ item.quantity|add:'1' }}" class="qty-btn" aria-label="Aumentar quantidade">+</button>
+        </form>
+
+        <span class="cart-row__subtotal">R$ {{ item.subtotal }}</span>
+
+        <form action="{% url 'store:cart_remove' item.product.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="cart-row__remove" aria-label="Remover item">🗑</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+
+    <aside class="cart-summary">
+      <h3>Resumo</h3>
+      <div class="cart-summary__row"><span>Itens</span><span>{{ cart|length }}</span></div>
+      <div class="cart-summary__total"><span>Total</span><strong>R$ {{ cart.total }}</strong></div>
+      <a href="{% url 'store:checkout' %}" class="btn btn--primary btn--lg btn--block">Finalizar compra ⚡</a>
+      <a href="{% url 'store:home' %}#vips" class="btn btn--ghost btn--block">Continuar explorando</a>
+    </aside>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <span class="empty-state__icon">🎒</span>
+    <h3>Seu inventário está vazio</h3>
+    <p>Escolha seu plano VIP e prepare sua próxima aventura no servidor.</p>
+    <a href="{% url 'store:home' %}#vips" class="btn btn--primary btn--lg">Explorar categorias</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
